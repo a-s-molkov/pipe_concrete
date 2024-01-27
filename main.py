@@ -1,7 +1,7 @@
 import pandas as pd
 import tkinter as tk
-from tkinter import ttk
 from tkinter import messagebox
+from tkinter import ttk
 from concrete import *
 from pipe import *
 
@@ -22,15 +22,14 @@ class App(tk.Tk):
         frm = ttk.Frame(self, padding=15)  # создает "рамку" с отступом от элементов в нужное кол-во единиц
         frm.grid()  # инициализация сетки
 
-        ttk.Label(frm, text="Внимание! Расчёт ведётся для стали 09Г2С", foreground='#ff0000').grid(columnspan=3, row=0,
-                                                                                                   pady=5)
+        ttk.Label(frm, text="Внимание! Расчёт ведётся для стали 09Г2С \n и только для сжатых элементов",
+                  foreground='#ff0000', justify='center').grid(columnspan=3, row=0, pady=5)
 
-        ttk.Label(frm, text="Продольное усилие", width=25).grid(column=0, row=1, sticky='w', pady=5)
-        ttk.Label(frm, text="Тип бетона", width=25).grid(column=0, row=2, sticky='w', pady=5)
-        ttk.Label(frm, text="Класс бетона", width=25).grid(column=0, row=3, sticky='w', pady=5)
-        ttk.Label(frm, text="Сечение трубы", width=25).grid(column=0, row=4, sticky='w', pady=5)
-        # ttk.Label(frm, text="", width=25).grid(column=0, row=5, sticky='w', pady=5)
-        ttk.Label(frm, text="Результат:", width=25, font='Arial 10 bold').grid(column=0, row=6, sticky='e', pady=10)
+        ttk.Label(frm, text="Продольное усилие", width=20).grid(column=0, row=1, sticky='w', pady=5)
+        ttk.Label(frm, text="Тип бетона", width=20).grid(column=0, row=2, sticky='w', pady=5)
+        ttk.Label(frm, text="Класс бетона", width=20).grid(column=0, row=3, sticky='w', pady=5)
+        ttk.Label(frm, text="Сечение трубы", width=20).grid(column=0, row=4, sticky='w', pady=5)
+        ttk.Label(frm, text="Результат:", width=20, font='Arial 10 bold').grid(column=0, row=6, sticky='e', pady=10)
         self.result_lbl = ttk.Label(frm, text="", width=20)
         self.result_lbl.grid(column=1, row=6, sticky='w', pady=5)
 
@@ -84,11 +83,14 @@ class App(tk.Tk):
                 strength_pipe, square_concrete = self.pipe.section(self.selected_pipe)
                 strength_concrete = res_concrete * square_concrete
                 strength = strength_pipe + 2.5 * strength_concrete
-                self.coef = pd.to_numeric(self.eff) / strength  # коэффициент запаса по прочности
-                if self.coef < 1:
-                    self.result_lbl.config(text=f'{self.coef:.5f}', font='Arial 10 bold', background='#4dff4d')
+                if pd.to_numeric(self.eff) == 0:
+                    messagebox.showerror("Ошибка!", "Усилие должно быть не равным нулю!")
                 else:
-                    self.result_lbl.config(text=f'{self.coef:.5f}', font='Arial 10 bold', background='#ff3333')
+                    self.coef = pd.to_numeric(self.eff) / strength  # коэффициент запаса по прочности
+                    if self.coef < 1:
+                        self.result_lbl.config(text=f'{self.coef:.5f}', font='Arial 10 bold', background='#4dff4d')
+                    else:
+                        self.result_lbl.config(text=f'{self.coef:.5f}', font='Arial 10 bold', background='#ff3333')
 
 
 if __name__ == "__main__":
